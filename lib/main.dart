@@ -1,56 +1,97 @@
+import './transaction.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData.dark(),
-      home: HomePage(),
+      title: 'Flutter App',
+      home: MyHomePage(),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  List<String> _tabs = ["Home", "Category", "Report"];
-
-  @override void initState() {
-    super.initState();
-    _tabController = new TabController(vsync: this, length: _tabs.length);
-  }
+class MyHomePage extends StatelessWidget {
+  final List<Transaction> transactions = [
+    Transaction(
+        id: 't1', title: 'New Shoes', amount: 150, date: DateTime.now()),
+    Transaction(
+        id: 't2', title: 'Groceries', amount: 350, date: DateTime.now()),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Expense Manager"),
-          bottom: TabBar(
-            controller: _tabController,
-            tabs: [
-              Tab(icon: Icon(Icons.home)),
-              Tab(icon: Icon(Icons.category)),
-              Tab(icon: Icon(Icons.report)),
-            ],
+      appBar: AppBar(
+        title: Text('Flutter App'),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Container(
+            width: double.infinity,
+            child: Card(
+              color: Colors.blue,
+              child: Text('CHART!'),
+            ),
           ),
-        ),
-        body: TabBarView(
-          controller: _tabController,
-          children: <Widget>[
-            Center(child: Text("Home", style: Theme.of(context).textTheme.headline6,)),
-            Center(child: Text("Category", style: Theme.of(context).textTheme.headline6,)),
-            Center(child: Text("Reports", style: Theme.of(context).textTheme.headline6,))
-          ],
-        )
+          Column(
+            children: transactions.map((tx) {
+              return Card(
+                child: Row(
+                    children: [
+                Container(
+                margin:
+                EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.indigo,
+                    width: 2,
+                  ),
+                ),
+                padding: EdgeInsets.all(10),
+                child: Text(
+                  tx.amount.toString(),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+              Text(
+              tx.title,
+              style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: Colors.lightBlueAccent,
+              ),
+              ),
+              Text(tx.date.toString(),
+              style: TextStyle(
+              fontSize: 8,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              ),
+              ),
+              ],
+              )
+              ]
+              ,
+              )
+              ,
+              );
+            }).toList(),
+          )
+        ],
+      ),
     );
   }
 }
