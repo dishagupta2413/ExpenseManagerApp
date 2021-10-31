@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class NewTransaction extends StatefulWidget {
   final Function addTx;
@@ -10,25 +11,44 @@ class NewTransaction extends StatefulWidget {
 }
 
 class _NewTransactionState extends State<NewTransaction> {
-  final titleController = TextEditingController();
+  final _titleController = TextEditingController();
+  final _amountController = TextEditingController();
+  late DateTime _selectDate;
 
-  final amountController = TextEditingController();
-
-  void submitData() {
-    final enteredTitle = titleController.text;
-    final enteredAmount = double.parse(amountController.text);
-
-    if (enteredTitle.isEmpty || enteredAmount <= 0) {
+  void _submitData() {
+    final enteredTitle = _titleController.text;
+    final enteredAmount = double.parse(_amountController.text);
+    if(_amountController.text.isEmpty){
+      return;
+    }
+    if (enteredTitle.isEmpty || enteredAmount <= 0 || _selectDate==null) {
       return;
     }
 
     widget.addTx(
       enteredTitle,
       enteredAmount,
+      _selectDate,
     );
 
     Navigator.of(context).pop();
     // to close the keyboard all by itself
+  }
+
+  void _presentDayPicker() {
+    showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2021),
+      lastDate: DateTime.now(),
+    ).then((pickedDate) {
+      if (pickedDate == null) {
+        return;
+      }
+      setState(() {
+        _selectDate = pickedDate;
+      });
+    });
   }
 
   @override
@@ -42,8 +62,11 @@ class _NewTransactionState extends State<NewTransaction> {
           children: [
             TextField(
               decoration: InputDecoration(labelText: 'Title'),
-              controller: titleController,
-              onSubmitted: (_) => submitData,
+              controller: _titleController,
+              onSubmitted: (_) => _submitData,
+
+
+
 
 // onChanged: (val){
 //   titleInput=val;
@@ -51,9 +74,9 @@ class _NewTransactionState extends State<NewTransaction> {
             ),
             TextField(
               decoration: InputDecoration(labelText: 'Amount'),
-              controller: amountController,
+              controller: _amountController,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
-              onSubmitted: (_) => submitData,
+              onSubmitted: (_) => _submitData,
 // onChanged: (val){
 //   amountInput=val;
 // },
@@ -62,14 +85,22 @@ class _NewTransactionState extends State<NewTransaction> {
               height: 70,
               child: Row(
                 children: [
-                  Text("No Date Chosen!"),
+                  Expanded(
+                    child: Text(
+                      _selectDate == null
+                          ? 'No Date Chosen!'
+                          : DateFormat.yMd().format(
+                              (_selectDate),
+                            ),
+                    ),
+                  ),
                   FlatButton(
                     textColor: Theme.of(context).primaryColorDark,
                     child: Text(
                       'Choose date',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    onPressed: () {},
+                    onPressed: _presentDayPicker,
                   ),
                 ],
               ),
@@ -78,7 +109,7 @@ class _NewTransactionState extends State<NewTransaction> {
               child: Text('Add Transaction'),
               color: Theme.of(context).primaryColorLight,
               textColor: Theme.of(context).textTheme.button!.color,
-              onPressed: submitData,
+              onPressed: _submitData,
             ),
           ],
         ),
