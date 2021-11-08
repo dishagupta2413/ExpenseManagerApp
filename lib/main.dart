@@ -1,3 +1,7 @@
+import 'dart:html';
+
+import 'package:flutter/services.dart';
+
 import './widgets/charts.dart';
 
 import './widgets/new_transaction.dart';
@@ -6,7 +10,14 @@ import './widgets/transaction_list.dart';
 import 'package:flutter/material.dart';
 import './Models/transaction.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp,
+       DeviceOrientation.portraitDown]);
+
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -18,15 +29,21 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.pinkAccent,
         errorColor: Colors.red,
         fontFamily: 'Quicksand',
-        textTheme: ThemeData.light().textTheme.copyWith(
-              headline6: TextStyle(
-                  fontFamily: 'OpenSans',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18),
-              button: TextStyle(color: Colors.white),
-            ),
+        textTheme: ThemeData
+            .light()
+            .textTheme
+            .copyWith(
+          headline6: TextStyle(
+              fontFamily: 'OpenSans',
+              fontWeight: FontWeight.bold,
+              fontSize: 18),
+          button: TextStyle(color: Colors.white),
+        ),
         appBarTheme: AppBarTheme(
-          textTheme: ThemeData.light().textTheme.copyWith(
+          textTheme: ThemeData
+              .light()
+              .textTheme
+              .copyWith(
               headline6: TextStyle(
                   fontFamily: 'OpenSans',
                   fontSize: 20,
@@ -65,8 +82,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }).toList();
   }
 
-  void _addNewTransaction(
-      String txTitle, double txAmount, DateTime chosenDate) {
+  void _addNewTransaction(String txTitle, double txAmount,
+      DateTime chosenDate) {
     final newTx = Transaction(
       id: DateTime.now().toString(),
       title: txTitle,
@@ -101,24 +118,49 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
+  final appBar = AppBar(
+    title: const Text('EXPENSE MANAGER APP'),
+    actions: [
+      // IconButton(
+      //   icon: Icon(Icons.add),
+      //   onPressed: () => _startAddNewTransaction(context),
+      // )
+    ],
+  );
+
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('EXPENSE MANAGER APP'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => _startAddNewTransaction(context),
-          )
-        ],
-      ),
+      appBar: appBar,
       body: SingleChildScrollView(
         child: Column(
           // mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Chart(_recentTransactions!),
-            TransactionList(_userTransactions, _deleteTransaction),
+            Container(
+              height: (MediaQuery
+                  .of(context)
+                  .size
+                  .height -
+                  appBar.preferredSize.height -
+                  MediaQuery
+                      .of(context)
+                      .padding
+                      .top) *
+                  0.3,
+              child: Chart(_recentTransactions!),
+            ),
+            Container(
+                height: (MediaQuery
+                    .of(context)
+                    .size
+                    .height -
+                    appBar.preferredSize.height -
+                    MediaQuery
+                        .of(context)
+                        .padding
+                        .top) *
+                    0.7,
+                child: TransactionList(_userTransactions, _deleteTransaction)),
           ],
         ),
       ),
