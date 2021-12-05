@@ -82,7 +82,7 @@ class _NewTransactionState extends State<NewTransaction> {
 // },
             ),
             Container(
-              height: 70,
+              // height: 70,
               child: Row(
                 children: [
                   Expanded(
